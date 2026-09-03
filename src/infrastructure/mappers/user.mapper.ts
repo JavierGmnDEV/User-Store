@@ -1,20 +1,11 @@
-import { CustomError } from '../errors/custom.error';
+import { UserEntity } from '../../domain/entities/user.entity';
+import { CustomError } from '../../domain/errors/custom.error';
 
-export class UserEntity {
+export class UserMapper {
 
-  constructor(
-    public id: string,
-    public name: string,
-    public email: string,
-    public emailValidated: boolean,
-    public password: string,
-    public role: string[],
-    public img?: string,
-  ) {}
-
-  static fromObject(object: { [key: string]: any }) {
+  static userEntityFromObject(object: { [key: string]: any }) {
     const { id, _id, name, email, emailValidated, password, role, img } = object;
-    const userId = id || _id;
+    const userId = id || _id?.toString();
 
     if (!userId) throw CustomError.badRequest('Missing id');
     if (!name) throw CustomError.badRequest('Missing name');
@@ -23,6 +14,14 @@ export class UserEntity {
     if (!password) throw CustomError.badRequest('Missing password');
     if (!role) throw CustomError.badRequest('Missing role');
 
-    return new UserEntity(userId, name, email, emailValidated, password, role, img);
+    return new UserEntity(
+      userId,
+      name,
+      email,
+      emailValidated,
+      password,
+      role,
+      img,
+    );
   }
 }

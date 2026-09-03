@@ -1,29 +1,28 @@
-import jwt, { SignOptions } from 'jsonwebtoken'
-import { envs } from './envs'
+import jwt, { SignOptions } from 'jsonwebtoken';
+import { envs } from './envs';
 
-const seed = envs.JWT_SEED
+const JWT_SEED = envs.JWT_SEED;
 
-export class JWTadapter{
+export class JwtAdapter {
 
+  static async generateToken(
+    payload: object,
+    duration: SignOptions['expiresIn'] = '2h',
+  ): Promise<string | null> {
+    return new Promise((resolve) => {
+      jwt.sign(payload, JWT_SEED, { expiresIn: duration }, (error, token) => {
+        if (error) return resolve(null);
+        resolve(token!);
+      });
+    });
+  }
 
-    static generateToken(payload:any , duration: SignOptions['expiresIn'] = '2h'){
-        return new Promise((resolve)=>{
-            jwt.sign(payload,seed,{expiresIn :duration},(err,token)=>{
-                if (err) return resolve(null)
-
-                    return resolve(token)
-            })
-    })
-        
-    }
-    static validateToken(token:string){
-        return new Promise((resolve)=>{
-            jwt.verify(token,seed,(err,decoded)=>{
-                if (err) return resolve(null)
-
-                    return resolve(decoded)
-            })
-    })
-            
-    }
+  static validateToken<T>(token: string): Promise<T | null> {
+    return new Promise((resolve) => {
+      jwt.verify(token, JWT_SEED, (error, decoded) => {
+        if (error) return resolve(null);
+        resolve(decoded as T);
+      });
+    });
+  }
 }
